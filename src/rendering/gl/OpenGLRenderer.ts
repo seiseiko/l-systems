@@ -40,6 +40,11 @@ class OpenGLRenderer {
     prog.setCameraAxes(axes);
 
     for (let drawable of drawables) {
+      
+      if (drawable.bindTex()){
+        prog.setText(drawable.getTex());
+        //console.log(drawable);
+      }
       prog.draw(drawable);
     }
   }

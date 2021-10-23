@@ -2,10 +2,13 @@ import {vec3} from 'gl-matrix';
 import * as Stats from 'stats-js';
 import * as DAT from 'dat-gui';
 import Square from './geometry/Square';
+import Mesh from './geometry/Mesh';
+import Leaf from './geometry/Leaf';
+import Cube from './geometry/Cube';
 import ScreenQuad from './geometry/ScreenQuad';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
-import {setGL} from './globals';
+import {setGL,readTextFile} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 
 // Define an object with application parameters and button callbacks
@@ -13,40 +16,25 @@ import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 const controls = {
 };
 
-let square: Square;
-let screenQuad: ScreenQuad;
 let time: number = 0.0;
-
+let m : Mesh; // Mesh for testing
+let l : Leaf;
 function loadScene() {
-  square = new Square();
-  square.create();
-  screenQuad = new ScreenQuad();
-  screenQuad.create();
 
-  // Set up instanced rendering data arrays here.
-  // This example creates a set of positional
-  // offsets and gradiated colors for a 100x100 grid
-  // of squares, even though the VBO data for just
-  // one square is actually passed to the GPU
-  let offsetsArray = [];
-  let colorsArray = [];
-  let n: number = 100.0;
-  for(let i = 0; i < n; i++) {
-    for(let j = 0; j < n; j++) {
-      offsetsArray.push(i);
-      offsetsArray.push(j);
-      offsetsArray.push(0);
+  // ************* mesh test ***************//
+  // let str = readTextFile("./src/obj/leaf.obj");
+  // m = new Mesh(str,vec3.fromValues(0,0,0));
+  // m.create();
+  // m.setNumInstances(1);
+   // ************* mesh test ***************//
 
-      colorsArray.push(i / n);
-      colorsArray.push(j / n);
-      colorsArray.push(1.0);
-      colorsArray.push(1.0); // Alpha channel
-    }
-  }
-  let offsets: Float32Array = new Float32Array(offsetsArray);
-  let colors: Float32Array = new Float32Array(colorsArray);
-  square.setInstanceVBOs(offsets, colors);
-  square.setNumInstances(n * n); // grid of "particles"
+  l = new Leaf("./src/obj/leaf.obj", "/src/obj/red-maple-leaf.jpg");
+  l.create();
+  let offset = new Float32Array([0,0,0,2,2,2]);
+  let offset2 = new Float32Array([0,0,0,1,0, 0, 0.7071068, 0.7071068 ]);
+  let offset3 = new Float32Array([0.5,0.5,0.5,1,1,1]);
+  l.setInstanceVBOs(offset,offset2,offset3);
+  l.setNumInstances(2);
 }
 
 function main() {
@@ -74,12 +62,14 @@ function main() {
   // Initial call to load scene
   loadScene();
 
-  const camera = new Camera(vec3.fromValues(50, 50, 10), vec3.fromValues(50, 50, 0));
+  const camera = new Camera(vec3.fromValues(0,0,0), vec3.fromValues(0, 0, 0));
 
   const renderer = new OpenGLRenderer(canvas);
   renderer.setClearColor(0.2, 0.2, 0.2, 1);
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.ONE, gl.ONE); // Additive blending
+  // gl.enable(gl.BLEND);
+  // gl.blendFunc(gl.ONE, gl.ONE); // Additive blending
+
+  gl.enable(gl.DEPTH_TEST);
 
   const instancedShader = new ShaderProgram([
     new Shader(gl.VERTEX_SHADER, require('./shaders/instanced-vert.glsl')),
@@ -90,6 +80,11 @@ function main() {
     new Shader(gl.VERTEX_SHADER, require('./shaders/flat-vert.glsl')),
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/flat-frag.glsl')),
   ]);
+  const lambert = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, require('./shaders/lambert-vert.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/lambert-frag.glsl')),
+  ]);
+
 
   // This function will be called every frame
   function tick() {
@@ -99,9 +94,9 @@ function main() {
     flat.setTime(time++);
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     renderer.clear();
-    renderer.render(camera, flat, [screenQuad]);
+    //renderer.render(camera, flat, [screenQuad]);
     renderer.render(camera, instancedShader, [
-      square,
+      l
     ]);
     stats.end();
 
