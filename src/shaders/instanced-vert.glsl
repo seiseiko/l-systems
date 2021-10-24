@@ -44,5 +44,5 @@ void main()
     
     fs_Pos = billboardPos;
     fs_LightVec = lightPos - fs_Pos;
-    gl_Position = u_ViewProj * fs_Pos;
+    gl_Position = u_ViewProj * billboardPos;
 }

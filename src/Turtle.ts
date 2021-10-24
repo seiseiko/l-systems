@@ -1,65 +1,79 @@
-import {vec3,vec4,mat4} from 'gl-matrix'
+import {vec3, vec4, mat4, mat3, quat} from 'gl-matrix';
 
-export class Turtle{
-    pos : vec3;
-    up : vec3;
-    look : vec3;
-    right : vec3;
-    depth : number = 0;
-    transform : mat4;
-    fixsteps : number = 1.3;
-    steps:number = 1.3;
+class Turtle {
+  position: vec3;
+  aim: vec3;
+  scale: vec3;
+  step: number; // step length
+  up: vec3;
+  quaternion: quat;
+  level: number;
 
-    constructor(pos:vec3 = vec3.fromValues(0,0,0),
-                up:vec3 = vec3.fromValues(0,1,0),
-                look :vec3 = vec3.fromValues(0,0,1),
-                right : vec3 = vec3.fromValues(1,0,0)){
-        this.pos = pos;
-        this.up = up;
-        this.look = look;
-        this.right = right;
-        this.transform = mat4.fromValues(1,0,0,0,
-                                        0,1,0,0,
-                                        0,0,1,0,
-                                        0,0,0,1)
-    }
 
-    moveforward(dis:number){
-        let oldpos:vec3 = vec3.create();
-        vec3.copy(oldpos,this.pos);
-        vec3.scaleAndAdd(this.pos,this.pos,this.look,dis);
-        let trans:vec3 = vec3.create();
-        vec3.sub(trans,oldpos,this.pos);
-        let transmat : mat4 = mat4.create();
-        mat4.translate(this.transform,this.transform,trans);
+  constructor(position: vec3, aim: vec3, scale: vec3, step: number, up: vec3, quaternion: quat, level: number) {
+    this.position = position;
+    this.aim = aim;
+    this.scale = scale;
+    this.step = step;
+    this.up = up;
+    this.quaternion = quaternion;
+    this.level = level;
+    console.log("constructed", this.position);
+  }
 
-        this.depth++;
-    }
+  toRadians(angle: number) {
+    return Math.PI * angle / 180.0;
+  }
 
-    rotateAroundUp(deg:number){
-        let radian = deg * Math.PI / 180;
-        let rot = mat4.create();
-        mat4.rotate(rot,rot,radian,this.up);
-        mat4.rotate(this.transform,this.transform,radian,this.up);
-        vec3.transformMat4(this.look,this.look,rot);
-        vec3.transformMat4(this.right,this.right,rot);
-    }
+  rotateVectorByQuat(v: vec3) {
+    let result: vec3 = vec3.create();
+    vec3.transformQuat(result, v, this.quaternion);
+    return result;
+  }
+  
+  rotate(axis: vec3, angle: number) {
+    vec3.normalize(axis, axis);
 
-    rotateAroundLook(deg:number){
-        let radian = deg * Math.PI / 180;
-        let rot = mat4.create();
-        mat4.rotate(rot,rot,radian,this.look);
-        mat4.rotate(this.transform,this.transform,radian,this.look);
-        vec3.transformMat4(this.up,this.up,rot);
-        vec3.transformMat4(this.right,this.right,rot);
-    }
+    let q: quat = quat.create();
+    quat.setAxisAngle(q, axis, this.toRadians(angle));
+    quat.normalize(q, q);
 
-    rotateAroundRight(deg:number){
-        let radian = deg * Math.PI / 180;
-        let rot = mat4.create();
-        mat4.rotate(rot,rot,radian,this.right);
-        mat4.rotate(this.transform,this.transform,radian,this.right);
-        vec3.transformMat4(this.look,this.look,rot);
-        vec3.transformMat4(this.up,this.up,rot);
-    }
+    let tempAim: vec4 = vec4.fromValues(this.aim[0], this.aim[1], this.aim[2], 0);
+    vec4.transformQuat(tempAim, tempAim, q);
+    this.aim = vec3.fromValues(tempAim[0], tempAim[1], tempAim[2]);
+
+    quat.rotationTo(this.quaternion, this.up, this.aim);
+    quat.normalize(this.quaternion, this.quaternion);
+  }
+
+  reverseAimY() {
+    this.aim[1] = -this.aim[1];
+    quat.rotationTo(this.quaternion, this.up, this.aim);
+    quat.normalize(this.quaternion, this.quaternion);
+  }
+
+  forward() {
+    let moveAmount: vec3 = vec3.create();
+    vec3.copy(moveAmount, this.aim);
+    vec3.scale(moveAmount, moveAmount, this.step * this.scale[1]);
+    vec3.add(this.position, this.position, moveAmount);
+  }
+
+  branch() {
+    let newPosition: vec3 = vec3.create();
+    vec3.copy(newPosition, this.position);
+    let newAim: vec3 = vec3.create();
+    vec3.copy(newAim, this.aim);
+    let newScale: vec3 = vec3.create();
+    vec3.copy(newScale, this.scale);
+    let newUp = vec3.create();
+    vec3.copy(newUp, this.up);
+    let newQuat = quat.create();
+    quat.copy(newQuat, this.quaternion);
+
+    let newTurtle: Turtle = new Turtle(newPosition, newAim, newScale, this.step, newUp, newQuat, this.level);
+    return newTurtle;
+  }
 }
+
+export default Turtle;

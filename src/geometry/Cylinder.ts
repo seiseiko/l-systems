@@ -4,7 +4,7 @@ import {gl,readTextFile} from '../globals';
 import * as Loader from 'webgl-obj-loader';
 import { debug } from 'console';
 
-class Leaf extends Drawable {
+class Cylinder extends Drawable {
 
   // basic mesh info
   indices: Uint32Array;
@@ -12,6 +12,7 @@ class Leaf extends Drawable {
   normals: Float32Array;
   colors: Float32Array;
   uvs: Float32Array;
+
 
   // loading from file
   objString: string;
@@ -43,7 +44,7 @@ class Leaf extends Drawable {
 
     // pos & normal
     for (var i = 0; i < loadedMesh.vertices.length; i++) {
-      posTemp.push(loadedMesh.vertices[i]*0.004);
+      posTemp.push(loadedMesh.vertices[i]);
       norTemp.push(loadedMesh.vertexNormals[i]);
       if (i % 3 == 2) {
         posTemp.push(1.0);
@@ -138,4 +139,4 @@ class Leaf extends Drawable {
 
 };
 
-export default Leaf;
+export default Cylinder;
