@@ -40,13 +40,13 @@ class Lsystem {
 
     // load mesh from files
     load_mesh(){
-        this.leaf_mesh_red = new Leaf("./src/obj/leaf.obj", "/src/obj/red-maple-leaf.jpg");
+        this.leaf_mesh_red = new Leaf("./src/obj/leaf.obj", "./src/obj/red-maple-leaf.jpg");
         this.leaf_mesh_red.create();
-        this.leaf_mesh_orange = new Leaf("./src/obj/leaf.obj", "/src/obj/orange.jpg");
+        this.leaf_mesh_orange = new Leaf("./src/obj/leaf.obj", "./src/obj/orange.jpg");
         this.leaf_mesh_orange.create();        
-        this.leaf_mesh_green = new Leaf("./src/obj/leaf.obj", "/src/obj/green.jpg");
+        this.leaf_mesh_green = new Leaf("./src/obj/leaf.obj", "./src/obj/green.jpg");
         this.leaf_mesh_green.create();
-        this.cylinder_mesh = new Cylinder("./src/obj/cylinder.obj", "/src/obj/tree.jpg");
+        this.cylinder_mesh = new Cylinder("./src/obj/cylinder.obj", "./src/obj/tree.jpg");
         this.cylinder_mesh.create();
     }
 

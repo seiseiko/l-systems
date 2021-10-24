@@ -61,15 +61,15 @@ function loadScene() {
   screen = new ScreenQuad();
   screen.create();
   screen.setNumInstances(1);
-  leaf[0] = new Leaf("./src/obj/leaf.obj", "/src/obj/red-maple-leaf.jpg");
+  leaf[0] = new Leaf("./src/obj/leaf.obj", "./src/obj/red-maple-leaf.jpg");
   leaf[0].create();
   let info = new InstanceInfo();
   leaf_floor(info,leaf[0],10000);
-  leaf[1] = new Leaf("./src/obj/leaf.obj", "/src/obj/orange.jpg");
+  leaf[1] = new Leaf("./src/obj/leaf.obj", "./src/obj/orange.jpg");
   leaf[1].create();
   info = new InstanceInfo();
   leaf_floor(info,leaf[1],10000);
-  leaf[2] = new Leaf("./src/obj/leaf.obj", "/src/obj/dead.jpg");
+  leaf[2] = new Leaf("./src/obj/leaf.obj", "./src/obj/dead.jpg");
   leaf[2].create();
   info = new InstanceInfo();
   leaf_floor(info,leaf[2],10000);
