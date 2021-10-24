@@ -22,3 +22,8 @@ export function readTextFile(file: string): string
     rawFile.send(null);
     return text;
 }
+export function generateRandomNumber(min:number,max:number) {
+    var highlightedNumber = Math.random() * (max - min) + min;
+
+    return highlightedNumber;
+};

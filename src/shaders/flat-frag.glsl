@@ -9,5 +9,5 @@ in vec2 fs_Pos;
 out vec4 out_Col;
 
 void main() {
-  out_Col = vec4(1.0);
+  out_Col = vec4(0.7882, 0.6471, 0.6471,1.0);
 }

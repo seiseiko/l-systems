@@ -18,13 +18,18 @@ uniform vec4 u_Color; // The color with which to render this instance of geometr
 in vec4 fs_Nor;
 in vec4 fs_LightVec;
 in vec4 fs_Col;
+in vec4 fs_Pos;
 
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
-
+const vec4 fogColor = vec4(0.7882, 0.6471, 0.6471,1.0);
+const float fogAmount= 0.5; 
 void main()
 {
+    float v_fogDepth = length(fs_Pos);
+    float fogAmount = smoothstep(20.0, 32.0, v_fogDepth);
     // Material base color (before shading)
-    vec3 col = vec3(0.3608, 0.4941, 0.1137);
-    out_Col = vec4(col,1.0);
+    vec4 col = vec4(0.1922, 0.0588, 0.0078, 1.0);
+    
+    out_Col = mix(col,fogColor,fogAmount);
 }

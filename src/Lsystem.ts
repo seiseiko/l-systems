@@ -1,10 +1,8 @@
 import {vec3,vec4,mat4} from 'gl-matrix'
 import { ExpansionRule } from './ExpansionRule';
-import { InstanceInfo,DrawingRule } from './DrawingRule';
+import { update_vbo,DrawingRule } from './DrawingRule';
 import Cylinder from './geometry/Cylinder';
 import Leaf from './geometry/Leaf';
-
-
 class Lsystem {
         
     expansionRule:ExpansionRule;
@@ -33,20 +31,12 @@ class Lsystem {
         // ************** update instance info inside drawing rule   
         this.drawingRule.draw(grammar);
         // 3. Set up instance VBO for leaf & cylinder
-        this.update_vbo(this.drawingRule.leaf_info_red,this.leaf_mesh_red);
-        this.update_vbo(this.drawingRule.leaf_info_orange,this.leaf_mesh_orange);
-        this.update_vbo(this.drawingRule.leaf_info_green,this.leaf_mesh_green);
-        this.update_vbo(this.drawingRule.branch_info,this.cylinder_mesh);        
+        update_vbo(this.drawingRule.leaf_info_red,this.leaf_mesh_red);
+        update_vbo(this.drawingRule.leaf_info_orange,this.leaf_mesh_orange);
+        update_vbo(this.drawingRule.leaf_info_green,this.leaf_mesh_green);
+        update_vbo(this.drawingRule.branch_info,this.cylinder_mesh);        
     }
 
-    update_vbo(instance:InstanceInfo,obj:any){
-        // setting up the vbo using instance info from drawing rule
-        let trans = new Float32Array(instance.trans);
-        let quat = new Float32Array(instance.quat);
-        let scale = new Float32Array(instance.scale);
-        obj.setInstanceVBOs(trans,quat,scale);
-        obj.setNumInstances(instance.count);
-    }
 
     // load mesh from files
     load_mesh(){

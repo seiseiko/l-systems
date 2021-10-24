@@ -1,7 +1,17 @@
 import {vec3,vec4,mat4,quat} from 'gl-matrix'
 import { start } from 'repl';
-
+import { generateRandomNumber } from './globals';
 import Turtle from './Turtle';
+import Leaf from './geometry/Leaf';
+
+export function update_vbo(instance:InstanceInfo,obj:any){
+    // setting up the vbo using instance info from drawing rule
+    let trans = new Float32Array(instance.trans);
+    let quat = new Float32Array(instance.quat);
+    let scale = new Float32Array(instance.scale);
+    obj.setInstanceVBOs(trans,quat,scale);
+    obj.setNumInstances(instance.count);
+}
 
 export class InstanceInfo{
     trans: number[]=[];
@@ -173,5 +183,18 @@ export class DrawingRule{
         t.rotate(t.getUp(),  -this.getrndAngle());
     }
 }
-
+export function leaf_floor(info:InstanceInfo,leaf:Leaf,num:number){
+    for(var i = 0; i< num; i++){
+      let q: quat = quat.create();
+      quat.setAxisAngle(q, vec3.fromValues(1,0,0),  Math.PI/2.0);
+      let q2: quat = quat.create();
+      quat.setAxisAngle(q2,vec3.fromValues(0,0,1),2*Math.PI*(Math.random()-0.5));
+      quat.multiply(q,q,q2);
+      info.trans.push(generateRandomNumber(-30,30),0.00001+Math.random()*0.1,generateRandomNumber(-25,15));
+      info.scale.push(1,1,1);
+      info.quat.push(q[0],q[1],q[2],q[3]);
+      info.count++;
+    }
+    update_vbo(info,leaf);
+  }
 export default DrawingRule;
