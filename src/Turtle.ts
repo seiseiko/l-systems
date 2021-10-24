@@ -18,7 +18,6 @@ class Turtle {
     this.up = up;
     this.quaternion = quaternion;
     this.level = level;
-    console.log("constructed", this.position);
   }
 
   toRadians(angle: number) {
@@ -35,15 +34,17 @@ class Turtle {
     vec3.normalize(axis, axis);
 
     let q: quat = quat.create();
-    quat.setAxisAngle(q, axis, this.toRadians(angle));
-    quat.normalize(q, q);
+    let q1: quat = quat.create();    
+    quat.setAxisAngle(q1, axis, this.toRadians(angle));
 
     let tempAim: vec4 = vec4.fromValues(this.aim[0], this.aim[1], this.aim[2], 0);
-    vec4.transformQuat(tempAim, tempAim, q);
+    vec4.transformQuat(tempAim, tempAim, q1);
     this.aim = vec3.fromValues(tempAim[0], tempAim[1], tempAim[2]);
 
-    quat.rotationTo(this.quaternion, this.up, this.aim);
+    // update quat
+    quat.multiply(this.quaternion,q1,this.quaternion);
     quat.normalize(this.quaternion, this.quaternion);
+
   }
 
   reverseAimY() {
@@ -73,6 +74,21 @@ class Turtle {
 
     let newTurtle: Turtle = new Turtle(newPosition, newAim, newScale, this.step, newUp, newQuat, this.level);
     return newTurtle;
+  }
+
+  getRight(){
+    let right: vec3 = this.rotateVectorByQuat(vec3.fromValues(1,0,0));
+    return right;
+  }
+
+  getUp(){
+    let up: vec3 = this.rotateVectorByQuat(vec3.fromValues(0,1,0));
+    return this.aim;
+  }
+
+  getLook(){
+    let look: vec3 = this.rotateVectorByQuat(vec3.fromValues(0,0,1));
+    return look;
   }
 }
 

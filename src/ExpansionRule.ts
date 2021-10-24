@@ -10,21 +10,30 @@ export class ExpansionRule {
     constructor(axiom : string) {
         this.axiom = axiom;
         // set up expansion rule
+        this.expansionRule.set('A', this.A.bind(this));
+        this.expansionRule.set('B', this.B.bind(this));
         this.expansionRule.set('F', this.F.bind(this));
-        this.expansionRule.set('X', this.X.bind(this));
     }
 
     // Rules with probability
-    F() {
+    A() {
         let rand = Math.random();
-        if (rand < 0.2) return 'FF';    // 20%
-        else return 'FFFFF';             // 80%
+        if (rand < 0.8) return 'F[/B][\\B][\\\B]FA';    // 20%
+        else return  'FF[/B][\\\\\\^^^B]FB';             // 80%
     }
 
-    X() { 
+    B() { 
         let rand = Math.random();
-        if (rand < 0.3) return '[FX][*+FX]'  // 30%
-        else return '[+FX][*+FX][**+FX]';    // 70%
+        if (rand < 0.3) return "FF[FFA]FFFFFFAJ";  // 30%
+        else if(rand < 0.95)return 'FF[FJFJ]FFF[/BJ]FFJFAJ';    // 70%
+        else return "FFFFFFFFJJAJ"
+    }
+
+    F(){
+        let rand = Math.random();
+        if (rand < 0.3) return "F";  // 30%
+        else if(rand < 0.95)return 'F';    // 70%
+        else return "FF"
     }
 
     // expand single character

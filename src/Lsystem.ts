@@ -11,14 +11,15 @@ class Lsystem {
     drawingRule:DrawingRule;
 
     // mesh obj to render
-    leaf_mesh: Leaf;
+    leaf_mesh_red: Leaf;
+    leaf_mesh_orange: Leaf;
+    leaf_mesh_green: Leaf;
     cylinder_mesh:Cylinder;
 
-
-    constructor(){
+    constructor(position:vec3){
         console.log("lsystem created");
-        this.expansionRule = new ExpansionRule("F"); // input axiom
-        this.drawingRule = new DrawingRule();
+        this.expansionRule = new ExpansionRule("FFFFFFFFFFA"); // input axiom
+        this.drawingRule = new DrawingRule(position);
         this.load_mesh();
     };      
 
@@ -32,7 +33,9 @@ class Lsystem {
         // ************** update instance info inside drawing rule   
         this.drawingRule.draw(grammar);
         // 3. Set up instance VBO for leaf & cylinder
-        this.update_vbo(this.drawingRule.leaf_info,this.leaf_mesh);
+        this.update_vbo(this.drawingRule.leaf_info_red,this.leaf_mesh_red);
+        this.update_vbo(this.drawingRule.leaf_info_orange,this.leaf_mesh_orange);
+        this.update_vbo(this.drawingRule.leaf_info_green,this.leaf_mesh_green);
         this.update_vbo(this.drawingRule.branch_info,this.cylinder_mesh);        
     }
 
@@ -41,19 +44,19 @@ class Lsystem {
         let trans = new Float32Array(instance.trans);
         let quat = new Float32Array(instance.quat);
         let scale = new Float32Array(instance.scale);
-        console.log(instance.trans);
-        console.log(instance.quat);
-        console.log(instance.scale);
         obj.setInstanceVBOs(trans,quat,scale);
         obj.setNumInstances(instance.count);
-
     }
 
     // load mesh from files
     load_mesh(){
-        this.leaf_mesh = new Leaf("./src/obj/leaf.obj", "/src/obj/red-maple-leaf.jpg");
-        this.leaf_mesh.create();
-        this.cylinder_mesh = new Cylinder("./src/obj/cylinder.obj", "/src/obj/red-maple-leaf.jpg");
+        this.leaf_mesh_red = new Leaf("./src/obj/leaf.obj", "/src/obj/red-maple-leaf.jpg");
+        this.leaf_mesh_red.create();
+        this.leaf_mesh_orange = new Leaf("./src/obj/leaf.obj", "/src/obj/orange.jpg");
+        this.leaf_mesh_orange.create();        
+        this.leaf_mesh_green = new Leaf("./src/obj/leaf.obj", "/src/obj/green.jpg");
+        this.leaf_mesh_green.create();
+        this.cylinder_mesh = new Cylinder("./src/obj/cylinder.obj", "/src/obj/tree.jpg");
         this.cylinder_mesh.create();
     }
 
