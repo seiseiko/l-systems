@@ -6428,15 +6428,15 @@ function loadScene() {
     screen = new __WEBPACK_IMPORTED_MODULE_4__geometry_ScreenQuad__["a" /* default */]();
     screen.create();
     screen.setNumInstances(1);
-    leaf[0] = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./src/obj/leaf.obj", "./src/obj/red-maple-leaf.jpg");
+    leaf[0] = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./obj/leaf.obj", "./obj/red-maple-leaf.jpg");
     leaf[0].create();
     let info = new __WEBPACK_IMPORTED_MODULE_11__DrawingRule__["b" /* InstanceInfo */]();
     Object(__WEBPACK_IMPORTED_MODULE_11__DrawingRule__["c" /* leaf_floor */])(info, leaf[0], 10000);
-    leaf[1] = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./src/obj/leaf.obj", "./src/obj/orange.jpg");
+    leaf[1] = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./obj/leaf.obj", "./obj/orange.jpg");
     leaf[1].create();
     info = new __WEBPACK_IMPORTED_MODULE_11__DrawingRule__["b" /* InstanceInfo */]();
     Object(__WEBPACK_IMPORTED_MODULE_11__DrawingRule__["c" /* leaf_floor */])(info, leaf[1], 10000);
-    leaf[2] = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./src/obj/leaf.obj", "./src/obj/dead.jpg");
+    leaf[2] = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./obj/leaf.obj", "./obj/dead.jpg");
     leaf[2].create();
     info = new __WEBPACK_IMPORTED_MODULE_11__DrawingRule__["b" /* InstanceInfo */]();
     Object(__WEBPACK_IMPORTED_MODULE_11__DrawingRule__["c" /* leaf_floor */])(info, leaf[2], 10000);
@@ -16948,13 +16948,13 @@ class Lsystem {
     }
     // load mesh from files
     load_mesh() {
-        this.leaf_mesh_red = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./src/obj/leaf.obj", "./src/obj/red-maple-leaf.jpg");
+        this.leaf_mesh_red = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./obj/leaf.obj", "./obj/red-maple-leaf.jpg");
         this.leaf_mesh_red.create();
-        this.leaf_mesh_orange = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./src/obj/leaf.obj", "./src/obj/orange.jpg");
+        this.leaf_mesh_orange = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./obj/leaf.obj", "./obj/orange.jpg");
         this.leaf_mesh_orange.create();
-        this.leaf_mesh_green = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./src/obj/leaf.obj", "./src/obj/green.jpg");
+        this.leaf_mesh_green = new __WEBPACK_IMPORTED_MODULE_3__geometry_Leaf__["a" /* default */]("./obj/leaf.obj", "./obj/green.jpg");
         this.leaf_mesh_green.create();
-        this.cylinder_mesh = new __WEBPACK_IMPORTED_MODULE_2__geometry_Cylinder__["a" /* default */]("./src/obj/cylinder.obj", "./src/obj/tree.jpg");
+        this.cylinder_mesh = new __WEBPACK_IMPORTED_MODULE_2__geometry_Cylinder__["a" /* default */]("./obj/cylinder.obj", "./obj/tree.jpg");
         this.cylinder_mesh.create();
     }
 }
