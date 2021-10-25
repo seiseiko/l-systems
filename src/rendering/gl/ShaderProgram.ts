@@ -45,6 +45,7 @@ class ShaderProgram {
   // custom uniform
   unifText:WebGLUniformLocation;
   unifTextBool:WebGLUniformLocation;
+  unifFogColor:WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -71,6 +72,7 @@ class ShaderProgram {
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
     this.unifCameraAxes      = gl.getUniformLocation(this.prog, "u_CameraAxes");
     this.unifTime      = gl.getUniformLocation(this.prog, "u_Time");
+    this.unifFogColor      = gl.getUniformLocation(this.prog, "u_FogCol");
     this.unifEye   = gl.getUniformLocation(this.prog, "u_Eye");
     this.unifRef   = gl.getUniformLocation(this.prog, "u_Ref");
     this.unifUp   = gl.getUniformLocation(this.prog, "u_Up");
@@ -138,6 +140,13 @@ class ShaderProgram {
     this.use();
     if (this.unifTime !== -1) {
       gl.uniform1f(this.unifTime, t);
+    }
+  }
+
+  setFogColor(t: number[]) {
+    this.use();
+    if (this.unifFogColor !== -1) {
+      gl.uniform4f(this.unifFogColor, t[0]/255.0,t[1]/255.0,t[2]/255.0,1.0);
     }
   }
 

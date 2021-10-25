@@ -3,6 +3,7 @@ import { start } from 'repl';
 import { generateRandomNumber } from './globals';
 import Turtle from './Turtle';
 import Leaf from './geometry/Leaf';
+import { l_system_control } from './main';
 
 export function update_vbo(instance:InstanceInfo,obj:any){
     // setting up the vbo using instance info from drawing rule
@@ -30,10 +31,13 @@ export class DrawingRule{
     turtles:Array<Turtle> = new Array(); // turtle stack
     current_turtle:Turtle;
     drawingRule: Map<string, any> = new Map();// map character to drawing functions
-    Angle = 30;
+    
+    rotate_angle:number;
+    twist_angle:number;
+    leaf_level:number;
+    leaf_probability:number;
     constructor(start_position:vec3){
         console.log("drawingRule created");
-
 
         // set up the turtle
         let t = new Turtle(start_position, // position
@@ -45,13 +49,11 @@ export class DrawingRule{
                     0); //level
 
                     
-        console.log("current turtle",t);
         
         this.turtles.push(t);
 
         this.current_turtle = this.turtles[0];
         
-        console.log("current turtle",this.turtles[0]);
         
         // set up drawing rule map
         this.drawingRule.set('F', this.drawForward.bind(this));
@@ -65,21 +67,25 @@ export class DrawingRule{
         this.drawingRule.set('^',this.rotateRightPos.bind(this));
         this.drawingRule.set('&',this.rotateRightNeg.bind(this));
         
+        // set up some parameter
+        this.rotate_angle = l_system_control.rotate_Angle;
+        this.twist_angle = l_system_control.randomTwistAngle;
+        this.leaf_level = l_system_control.leaves_level;
+        this.leaf_probability = l_system_control.leaf_probability;
     };      
     
     getrndAngle(){
         let p = Math.random();
-        if(p>0&&p<0.2){return this.Angle/1.6;}
-        else if(p>0.2&&p<0.4){return this.Angle/1.3;}
-        else if(p>0.4&&p<0.6){return this.Angle;}
-        else if(p>0.6&&p<0.8){return this.Angle*1.3;}
-        return this.Angle*1.6;
+        if(p>0&&p<0.2){return this.rotate_angle/1.6;}
+        else if(p>0.2&&p<0.4){return this.rotate_angle/1.3;}
+        else if(p>0.4&&p<0.6){return this.rotate_angle;}
+        else if(p>0.6&&p<0.8){return this.rotate_angle*1.3;}
+        return this.rotate_angle*1.6;
     }
 
 
 
     draw(grammar:string){
-        console.log("DrawingRule starts to draw:");
         
         for (let i = 0; i < grammar.length; i++) {
              if(this.current_turtle.scale[0]<0.0002){
@@ -97,9 +103,9 @@ export class DrawingRule{
 
        t.scale[0] *= 0.98;
        t.scale[2] *= 0.98;
-    // // adding random twist
-        t.rotate(t.getUp(), 20*(Math.random()-0.5));
-        t.rotate(t.getRight(),20*(Math.random()-0.5));
+        
+        t.rotate(t.getUp(), this.twist_angle*(Math.random()-0.5));
+        t.rotate(t.getRight(),this.twist_angle*(Math.random()-0.5));
 
        this.branch_info.scale.push(t.scale[0],t.scale[1],t.scale[2]);
        this.branch_info.quat.push(t.quaternion[0],t.quaternion[1],t.quaternion[2],t.quaternion[3]);
@@ -114,20 +120,24 @@ export class DrawingRule{
 
         // prevent leaf grow in the low level
         let t = this.current_turtle.branch();
+        if(t.level<this.leaf_level)return;
+
         var leaf_info:InstanceInfo;
         
-        // Randomly instance:
+        // Random leaf option
         let p = Math.random();
+        if(p>this.leaf_probability)return;
         if(p<0.6)
             leaf_info = this.leaf_info_red;
         else if(p<0.9)
             leaf_info = this.leaf_info_orange;
         else
             leaf_info = this.leaf_info_green;
-        if(t.level<2)return;
-        // adding random twist
-        t.rotate(t.getUp(), 100*(Math.random()-0.5));
-        t.rotate(t.getRight(),100*(Math.random()-0.5));
+
+        // adding random some twist
+        t.rotate(t.getUp(), 2*this.twist_angle*(Math.random()-0.5));
+        t.rotate(t.getRight(),2*this.twist_angle*(Math.random()-0.5));
+
         leaf_info.scale.push(1.0,1.0,1.0);
         leaf_info.quat.push(t.quaternion[0],t.quaternion[1],t.quaternion[2],t.quaternion[3]);
         leaf_info.trans.push(t.position[0],t.position[1],t.position[2]);
@@ -178,12 +188,14 @@ export class DrawingRule{
         let t = this.current_turtle;
         t.rotate(t.getUp(),  this.getrndAngle());
     }
+    
     rotateUpNeg(){
         let t = this.current_turtle;
         t.rotate(t.getUp(),  -this.getrndAngle());
     }
 }
 export function leaf_floor(info:InstanceInfo,leaf:Leaf,num:number){
+    leaf.create();
     for(var i = 0; i< num; i++){
       let q: quat = quat.create();
       quat.setAxisAngle(q, vec3.fromValues(1,0,0),  Math.PI/2.0);

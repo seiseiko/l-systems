@@ -3,8 +3,9 @@ import { ExpansionRule } from './ExpansionRule';
 import { update_vbo,DrawingRule } from './DrawingRule';
 import Cylinder from './geometry/Cylinder';
 import Leaf from './geometry/Leaf';
+import { file_string } from './globals';
 class Lsystem {
-        
+    iteration:number;
     expansionRule:ExpansionRule;
     drawingRule:DrawingRule;
 
@@ -14,18 +15,19 @@ class Lsystem {
     leaf_mesh_green: Leaf;
     cylinder_mesh:Cylinder;
 
-    constructor(position:vec3){
+    constructor(position:vec3,iter:number){
         console.log("lsystem created");
         this.expansionRule = new ExpansionRule("FFFFFFFFFFA"); // input axiom
         this.drawingRule = new DrawingRule(position);
+        this.iteration = iter;
         this.load_mesh();
     };      
 
 
     // main function --- call to expand axiom & update vbo to render
-    draw(iter:number){
+    draw(){
         // 1. get expanded result string
-        this.expansionRule.expand(iter);
+        this.expansionRule.expand(this.iteration);
         let grammar = this.expansionRule.expanded_string;
         // 2. Main loop to eval grammar inside drawingrule.draw
         // ************** update instance info inside drawing rule   
@@ -40,13 +42,13 @@ class Lsystem {
 
     // load mesh from files
     load_mesh(){
-        this.leaf_mesh_red = new Leaf("./obj/leaf.obj", "./obj/red-maple-leaf.jpg");
+        this.leaf_mesh_red = new Leaf(file_string.leaf_obj, file_string.red_text);
         this.leaf_mesh_red.create();
-        this.leaf_mesh_orange = new Leaf("./obj/leaf.obj", "./obj/orange.jpg");
+        this.leaf_mesh_orange = new Leaf(file_string.leaf_obj, file_string.yellow_text);
         this.leaf_mesh_orange.create();        
-        this.leaf_mesh_green = new Leaf("./obj/leaf.obj", "./obj/green.jpg");
+        this.leaf_mesh_green = new Leaf(file_string.leaf_obj, file_string.dark_text);
         this.leaf_mesh_green.create();
-        this.cylinder_mesh = new Cylinder("./obj/cylinder.obj", "./obj/tree.jpg");
+        this.cylinder_mesh = new Cylinder(file_string.cyliner_obj, file_string.tree_text);
         this.cylinder_mesh.create();
     }
 

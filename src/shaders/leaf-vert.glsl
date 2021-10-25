@@ -74,7 +74,7 @@ void main()
     fs_UV = vs_UV;
     // apply scale
     vec3 pos = vs_Pos.xyz*vs_Scale;
-    vec3 n = vec3(0,0,0.3*pos.y*fbm(pos)*(sin(u_Time*0.04)+cos(u_Time*0.02)));
+    vec3 n = vec3(0,0,0.4*pos.y*fbm(pos)*(sin(u_Time*0.04)+cos(u_Time*0.02)));
     // apply quat to pos & normal
     pos = pos + n;
     pos = rotate_vertex_position(pos,vs_Quat);

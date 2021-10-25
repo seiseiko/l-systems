@@ -1,5 +1,6 @@
 import {vec3,vec4,mat4} from 'gl-matrix'
 import { stringify } from 'querystring';
+import { l_system_control } from './main';
 
 
 export class ExpansionRule {
@@ -18,22 +19,22 @@ export class ExpansionRule {
     // Rules with probability
     A() {
         let rand = Math.random();
-        if (rand < 0.8) return 'F[/B][\\B][\\\B]FA';    // 20%
-        else return  'FF[/B][\\\\\\^^^B]FB';             // 80%
+        if (rand < 0.8) return 'F[/B][\\B][\\\B]FA';    
+        else return  'FF[/B][\\\\\\^^^B]FB';            
     }
 
     B() { 
         let rand = Math.random();
         if (rand < 0.3) return "FF[FFA]FFFFFFAJ";  // 30%
-        else if(rand < 0.95)return 'FF[FJFJ]FFF[/BJ]FFJFAJ';    // 70%
-        else return "FFFFFFFFJJAJ"
+        else if(rand < (0.95))return 'FF[FJFJ]FFF[/BJ]FFJFAJ';    // 65%
+        else return "FFFFFFFFJJAJ" // 5%
     }
 
     F(){
         let rand = Math.random();
         if (rand < 0.3) return "F";  // 30%
-        else if(rand < 0.95)return 'F';    // 70%
-        else return "FF"
+        else if(rand < (1-l_system_control.branch_extend_probability))return 'F';    
+        else return "FF" // extend
     }
 
     // expand single character
@@ -54,7 +55,6 @@ export class ExpansionRule {
            
            res = temp;
         }
-        console.log("string expanded:",res);
         this.expanded_string = res;
         
     }

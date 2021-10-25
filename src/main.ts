@@ -9,70 +9,107 @@ import Cube from './geometry/Cube';
 import ScreenQuad from './geometry/ScreenQuad';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
-import { generateRandomNumber, setGL } from './globals';
+import { generateRandomNumber, setGL, getRandomInt, createGrid, file_string } from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 import Lsystem from './Lsystem';
 import Drawable from './rendering/gl/Drawable';
 import Plane from './geometry/plane';
 import { leaf_floor, InstanceInfo } from './DrawingRule';
-// Define an object with application parameters and button callbacks
-// This will be referred to by dat.GUI's functions that add GUI elements.
+
+
+// gui option const  
 const controls = {
+  'Load Scene': loadScene,
+};
+export const l_system_control = {
+  leaves_level: 2,
+  leaf_probability: 0.99,
+  randomTwistAngle:20,
+  max_iteration: 10,
+  rotate_Angle: 30,
+  branch_extend_probability:0.05,
+
+};
+export const scene_control = {
+   max_tree_number: 30,
+   max_floor_leaves: 10000,
+   depth_fog_color:[247, 215, 218],
 };
 
+// global 
 let time: number = 0.0;
 let m : Mesh; // Mesh for testing
-let leaf : Leaf[]=[];
-let c : Cylinder;
-let p : Plane;
-let l_system: Lsystem[] =[];
-let mesh_array_branch:Array<Drawable> = [];
-let mesh_array_leaf:Array<Drawable> = [];
-let screen : ScreenQuad; // Mesh for testing
+let leaf : Leaf[]=[]; // for leaves on the ground
+let p : Plane; // ground
+let l_system: Lsystem[]=[]; // our l-system
+let mesh_array_branch:Array<Drawable> =[] ; // branches mesh
+let mesh_array_leaf:Array<Drawable> = []; // leaves
+let screen : ScreenQuad; // background mesh
 
+
+// main func -- load scene
 function loadScene() {
+  // empty array for re-load
+  l_system.length = 0;
+  mesh_array_branch.length = 0;
+  mesh_array_leaf.length = 0;
+  leaf.length = 0;
 
   // set up lsystem
-  l_system[0] = new Lsystem(vec3.fromValues(0,0,-3));
-  l_system[1] = new Lsystem(vec3.fromValues(8,0,-8));
-  l_system[2] = new Lsystem(vec3.fromValues(18,0,-15));
-  l_system[3] = new Lsystem(vec3.fromValues(-8,-2,5));
-  l_system[4] = new Lsystem(vec3.fromValues(-15,0,-5));
-  l_system[5] = new Lsystem(vec3.fromValues(-12,0,-10));
-  l_system[6] = new Lsystem(vec3.fromValues(-3,0,-15));
-  l_system[7] = new Lsystem(vec3.fromValues(0,0,-23));
-  l_system[8] = new Lsystem(vec3.fromValues(6,0,-22));
-  l_system[9] = new Lsystem(vec3.fromValues(8,0,-24));
+  // center default trees
+  l_system[0] = new Lsystem(vec3.fromValues(0,0,-3),9);
+  l_system[1] = new Lsystem(vec3.fromValues(-8,-2,5),9);
+  // randomly generate tree
+  let num = getRandomInt(scene_control.max_tree_number*0.8, scene_control.max_tree_number);
+  let grids = createGrid();
+  
+  for(var i = 0; i<num;i++){
+    var index = Math.floor(Math.random()*grids.length);
+    var grid = grids[index]; // randomly shuffle a grid from grids
+    grids.splice(index, 1); // remove that grid
+    var iter = getRandomInt(l_system_control.max_iteration-2.0, l_system_control.max_iteration);// at least 7 to hold shape
+    // each tree needs at least around 6 * 5, place them randomly in 5x5 grid.
+    var pos = vec3.fromValues(grid[0]*6+generateRandomNumber(3,3.5),0,-grid[1]*5-generateRandomNumber(2,4));
+    l_system[i+2] = new Lsystem(pos,iter);
+  }
+
+  // setup mesh array
   for(var l of l_system){
-    l.draw(8);
+    l.draw();
     mesh_array_branch.push(l.cylinder_mesh);
     mesh_array_leaf.push(l.leaf_mesh_red);
     mesh_array_leaf.push(l.leaf_mesh_green);
     mesh_array_leaf.push(l.leaf_mesh_orange);
   }  
+  // set up background
+  backgroundSetup();
+}
 
+function backgroundSetup(){
 
   // background
   // plane
   p = new Plane(vec3.fromValues(0,-0.1,0), vec2.fromValues(450,450), 20);
   p.create();
   p.setNumInstances(1);
+
   // screen
   screen = new ScreenQuad();
   screen.create();
   screen.setNumInstances(1);
-  leaf[0] = new Leaf("./obj/leaf.obj", "./obj/red-maple-leaf.jpg");
-  leaf[0].create();
-  let info = new InstanceInfo();
-  leaf_floor(info,leaf[0],10000);
-  leaf[1] = new Leaf("./obj/leaf.obj", "./obj/orange.jpg");
-  leaf[1].create();
+
+  var info = new InstanceInfo();
+  leaf[0] = new Leaf(file_string.leaf_obj, file_string.red_text);
+  var num = getRandomInt(scene_control.max_floor_leaves/2,scene_control.max_floor_leaves);
+  leaf_floor(info,leaf[0],num);
+  leaf[1] = new Leaf(file_string.leaf_obj,file_string.yellow_text);
   info = new InstanceInfo();
-  leaf_floor(info,leaf[1],10000);
-  leaf[2] = new Leaf("./obj/leaf.obj", "./obj/dead.jpg");
-  leaf[2].create();
+  num = getRandomInt(scene_control.max_floor_leaves/2,scene_control.max_floor_leaves);
+  leaf_floor(info,leaf[1],num);
+  leaf[2] = new Leaf(file_string.leaf_obj, file_string.black_text);
+  num = getRandomInt(scene_control.max_floor_leaves/2,scene_control.max_floor_leaves);
   info = new InstanceInfo();
-  leaf_floor(info,leaf[2],10000);
+  leaf_floor(info,leaf[2],num);
 }
 
 function main() {
@@ -86,6 +123,22 @@ function main() {
 
   // Add controls to the gui
   const gui = new DAT.GUI();
+  gui.add(controls, 'Load Scene');
+  var c = gui.addFolder('L_system setting');
+  
+  c.add(l_system_control,'leaves_level',0,10).step(1);
+  c.add(l_system_control,'leaf_probability',0.0,1).step(0.01);
+  c.add(l_system_control,'randomTwistAngle',10,100);
+  c.add(l_system_control,'max_iteration',4,10).step(1);
+  c.add(l_system_control,"rotate_Angle",20,60);
+  c.add(l_system_control,"branch_extend_probability",0.0,0.12).step(0.01);
+  c.open();
+
+  var f = gui.addFolder("Scene setting");
+  f.add(scene_control,"max_tree_number",0,60).step(1);
+  f.add(scene_control,"max_floor_leaves",0,20000).step(100);
+  f.addColor(scene_control,"depth_fog_color");
+  f.open();
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
