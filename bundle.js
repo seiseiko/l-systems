@@ -169,13 +169,13 @@ function createGrid() {
     return array;
 }
 const file_string = {
-    leaf_obj: "./src/obj/leaf.obj",
-    red_text: "./src/obj/red-maple-leaf.jpg",
-    yellow_text: "./src/obj/orange.jpg",
-    black_text: "./src/obj/dead.jpg",
-    cyliner_obj: "./src/obj/cylinder.obj",
-    tree_text: "./src/obj/tree.jpg",
-    dark_text: "./src/obj/green.jpg",
+    leaf_obj: "./obj/leaf.obj",
+    red_text: "./obj/red-maple-leaf.jpg",
+    yellow_text: "./obj/orange.jpg",
+    black_text: "./obj/dead.jpg",
+    cyliner_obj: "./obj/cylinder.obj",
+    tree_text: "./obj/tree.jpg",
+    dark_text: "./obj/green.jpg",
 };
 /* harmony export (immutable) */ __webpack_exports__["b"] = file_string;
 
