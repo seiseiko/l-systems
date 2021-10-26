@@ -12,7 +12,7 @@
 
 ### L-system Attribute
 #### Scene randomness
-The array of L-system instances are generated randomly. We divide the ground into 5x6 grids and place L-system randomly on one grid based on several parameter:
+The array of L-system instances are generated randomly. I divide the ground into 5x6 grids and place L-system randomly on one grid based on several parameter:
 - Max iteration by gui
 - Max tree number by gui
 ```
