@@ -1,8 +1,6 @@
-# Homework 4: L-systems
 
-## Info
-- Lanqing Bao (lanqing)
-- Link:  https://seiseiko.github.io/hw04-l-systems/
+## Real-time demo
+- Link:  https://seiseiko.github.io/l-systems/
 
 ## Screenshots
 
